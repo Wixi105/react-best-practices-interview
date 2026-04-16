@@ -1,9 +1,24 @@
 import { useState } from "react"
 
-export default function TodoItem({ todo, onDelete, onToggle, onUpdate }: any) {
+interface TodoItemProps {
+  todo: {
+    id: string | number
+    title?: string
+    name?: string
+    text?: string
+    completed?: boolean
+    done?: boolean
+    isDone?: boolean
+  }
+  onDelete: (id: string | number) => void
+  onToggle: (id: string | number) => void
+  onUpdate: (id: string | number, text: string) => void
+}
+
+export default function TodoItem({ todo, onDelete, onToggle, onUpdate }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false)
 
-  const [editText, setEditText]: any = useState(
+  const [editText, setEditText] = useState(
     todo.title || todo.name || todo.text,
   )
 
@@ -12,7 +27,7 @@ export default function TodoItem({ todo, onDelete, onToggle, onUpdate }: any) {
   const displayText = todo.title || todo.name || todo.text
 
   const handleSave = () => {
-    onUpdate(todo.id || todo._id || todo.identifier, editText)
+    onUpdate(todo.id, editText)
     setIsEditing(false)
   }
 
@@ -32,25 +47,26 @@ export default function TodoItem({ todo, onDelete, onToggle, onUpdate }: any) {
       <input
         type="checkbox"
         checked={!!isCompleted}
-        onChange={() => onToggle(todo.id || todo._id || todo.identifier)}
+        onChange={() => onToggle(todo.id)}
       />
 
       {isEditing ? (
         <>
           <input
             value={editText}
-            onChange={(e: any) => setEditText(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditText(e.target.value)}
             style={{ flex: 1, padding: "4px" }}
           />
-          <button onClick={handleSave}>Save</button>
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
+          <button onClick={handleSave} type="button">Save</button>
+          <button onClick={() => setIsEditing(false)} type="button">Cancel</button>
         </>
       ) : (
         <>
           <span style={{ flex: 1 }}>{displayText}</span>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
+          <button onClick={() => setIsEditing(true)} type="button">Edit</button>
           <button
             onClick={() => onDelete(todo.id || todo._id || todo.identifier)}
+            type="button"
           >
             Delete
           </button>
