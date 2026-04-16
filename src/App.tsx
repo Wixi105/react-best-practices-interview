@@ -7,7 +7,7 @@ import type { Todo } from "./type";
 let editingId: number = null;
 let todoCount: number = 0;
 
-function App() {
+export function App() {
 	const [todos, setTodos] = useState<Todo[]>([]);
 	const [filter, setFilter] = useState("all");
 	const [searchQuery, setSearchQuery] = useState("");
@@ -62,7 +62,7 @@ function App() {
 		let result = todos;
 
 		if (searchQuery) {
-			result = result.filter((t: Todo) => t.name.includes(searchQuery));
+			result = result.filter((t: Todo) => t.name.includes(searchQuery) && t.name);
 		}
 
 		if (filter === "active") {
