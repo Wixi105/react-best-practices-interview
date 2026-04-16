@@ -7,7 +7,7 @@ import type { Todo } from "./type";
 let editingId: number = null;
 let todoCount: number = 0;
 
-export function App() {
+function App() {
 	const [todos, setTodos] = useState<Todo[]>([]);
 	const [filter, setFilter] = useState("all");
 	const [searchQuery, setSearchQuery] = useState("");
@@ -62,7 +62,7 @@ export function App() {
 		let result = todos;
 
 		if (searchQuery) {
-			result = result.filter((t: Todo) => t.name.includes(searchQuery) && t.name);
+			result = result.filter((t: Todo) => t.name.includes(searchQuery));
 		}
 
 		if (filter === "active") {
@@ -134,9 +134,10 @@ export function App() {
 					gap: "16px",
 				}}
 			>
-				<span>Total: {todos.length}</span>
+				<span>Total (global): {todos.length}</span>
 				<span>Completed: {completedCount}</span>
-				<span>Next id: {todoCount + 1}</span>
+				<span>Count (module var): {todoCount}</span>
+				<span>Next id: {todoCount}</span>
 			</div>
 		</div>
 	);
