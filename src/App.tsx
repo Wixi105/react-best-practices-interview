@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import AddTodo from "./components/AddTodo";
 import TodoList from "./components/TodoList";
-import { todos as globalTodos, idCounter, syncTodos } from "./globals";
 import { loadFromStorage, saveToStorage } from "./storage";
 import type { Todo } from "./type";
 
@@ -9,27 +8,25 @@ let editingId: number = null;
 let todoCount: number = 0;
 
 function App() {
-	const [todos, setTodos]: any = useState([]);
-	const [filter, setFilter]: any = useState("all");
-	const [searchQuery, setSearchQuery]: any = useState("");
+	const [todos, setTodos] = useState<Todo[]>([]);
+	const [filter, setFilter] = useState("all");
+	const [searchQuery, setSearchQuery] = useState("");
 
 	useEffect(() => {
-		const stored: Todo[]= loadFromStorage();
+		const stored: Todo[] = loadFromStorage();
 		setTodos(stored);
-		syncTodos(stored);
 		todoCount = stored.length;
-	}, 	[]);
+	}, []);
 
-	const addTodo = (text: any) => {
+	const addTodo = (text: string) => {
+		if (!text) return;
 		const newTodo: Todo = {
 			id: Date.now(),
 			name: text,
 			done: false,
 			createdAt: new Date(),
 		};
-
 		todos.push(newTodo);
-		syncTodos(todos);
 		todoCount++;
 		setTodos([...todos]);
 		saveToStorage(todos);
@@ -41,9 +38,9 @@ function App() {
 		saveToStorage(updated);
 	};
 
-	const toggleTodo = (id: any) => {
-		todos.forEach((t: any) => {
-			if (t.id == id || t._id == id || t.identifier == id) {
+	const toggleTodo = (id: number) => {
+		todos.forEach((t: Todo) => {
+			if (t.id === id) {
 				t.completed = !t.completed;
 				t.done = !t.done;
 				t.isDone = !t.isDone;
@@ -53,13 +50,9 @@ function App() {
 		saveToStorage(todos);
 	};
 
-	const updateTodo = (id: any, text: any) => {
-		const todo = todos.find(
-			(t: any) => t.id == id || t._id == id || t.identifier == id,
-		);
-		todo.title = text;
+	const updateTodo = (id: number, text: string) => {
+		const todo = todos.find((t: Todo) => t.id === id);
 		todo.name = text;
-		todo.text = text;
 		editingId = null;
 		setTodos([...todos]);
 		saveToStorage(todos);
@@ -69,23 +62,20 @@ function App() {
 		let result = todos;
 
 		if (searchQuery) {
-			result = result.filter(
-				(t: any) =>
-					t.title.includes(searchQuery) || t.name.includes(searchQuery),
-			);
+			result = result.filter((t: Todo) => t.name.includes(searchQuery));
 		}
 
 		if (filter === "active") {
-			return result.filter((t: any) => !t.completed && !t.done);
+			return result.filter((t: Todo) => !t.completed && !t.done);
 		} else if (filter === "completed") {
-			return result.filter((t: any) => t.completed || t.done);
+			return result.filter((t: Todo) => t.completed || t.done);
 		}
 
 		return result;
 	};
 
 	const completedCount = todos.filter(
-		(t: any) => t.completed || t.done || t.isDone,
+		(t: Todo) => t.completed || t.done || t.isDone,
 	).length;
 
 	return (
@@ -103,7 +93,9 @@ function App() {
 				type="text"
 				placeholder="Search todos..."
 				value={searchQuery}
-				onChange={(e: any) => setSearchQuery(e.target.value)}
+				onChange={(e: ChangeEvent<HTMLInputElement>) =>
+					setSearchQuery(e.target.value)
+				}
 				style={{
 					width: "100%",
 					padding: "8px",
@@ -115,9 +107,15 @@ function App() {
 			<AddTodo onAdd={addTodo} />
 
 			<div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
-				<button onClick={() => setFilter("all")}>All</button>
-				<button onClick={() => setFilter("active")}>Active</button>
-				<button onClick={() => setFilter("completed")}>Completed</button>
+				<button onClick={() => setFilter("all")} type="button">
+					All
+				</button>
+				<button onClick={() => setFilter("active")} type="button">
+					Active
+				</button>
+				<button onClick={() => setFilter("completed")} type="button">
+					Completed
+				</button>
 			</div>
 
 			<TodoList
@@ -136,10 +134,9 @@ function App() {
 					gap: "16px",
 				}}
 			>
-				<span>Total (global): {globalTodos.length}</span>
+				<span>Total: {todos.length}</span>
 				<span>Completed: {completedCount}</span>
-				<span>Count (module var): {todoCount}</span>
-				<span>Next id: {idCounter}</span>
+				<span>Next id: {todoCount + 1}</span>
 			</div>
 		</div>
 	);

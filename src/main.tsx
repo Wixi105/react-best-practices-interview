@@ -2,16 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
+import type { Todo } from "./type";
 
 const STORAGE_KEY = "todo-app-todos";
-
-export interface SeedData {
-	id: number;
-	name?: string;
-	completed?: boolean;
-	done?: boolean;
-	isDone?: boolean;
-}
 
 if (!localStorage.getItem(STORAGE_KEY)) {
 	const seedData = [
@@ -21,7 +14,7 @@ if (!localStorage.getItem(STORAGE_KEY)) {
 		{ id: 4, name: "Fix the bug", isDone: false },
 		{ id: 5, name: "Call mom", completed: null },
 		{ id: 6, completed: false },
-	] satisfies SeedData[];
+	] satisfies Todo[];
 
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(seedData));
 }

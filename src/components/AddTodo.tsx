@@ -1,12 +1,14 @@
-import { useRef } from "react"
+import { type FormEvent, useRef } from "react"
 
-export default function AddTodo({ onAdd }: any) {
-  const inputRef: any = useRef()
+export default function AddTodo({ onAdd }: { onAdd: (text: string) => void }) {
+  const inputRef = useRef(null)
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (inputRef.current) {
     onAdd(inputRef.current.value)
     inputRef.current.value = ""
+    }
   }
 
   return (
